@@ -1,34 +1,44 @@
-CANOPY CHASE 0.1.0 — BUILD VERIFICATION
+CANOPY CHASE 0.2.0 — MULTIPLAYER BUILD VERIFICATION
 
-APK: CanopyChase-Quest.apk
-Bytes: 169638323
-Size: 169.64 MB (161.78 MiB)
-SHA-256: 78d3a41d182e9e425de7b054aabae401682f685e6b496e98b5a4822f38268e28
-
+APK: CanopyChase-Quest-Multiplayer.apk
+Bytes: 169655369
+Size: 169.66 MB
+SHA-256: da027d1c40f096a0a031502b7ca7995e479a6d0893534e966587bb786b0eb740
 Package: org.canopychase.quest
-Architecture: ARM64 only
-Minimum Android API: 29
-Target Android API: 36
-Godot: 4.6.3 stable
-OpenXR Vendors: 5.1.0
-Signing: local development certificate; APK v2 signature verified
-APK alignment: 4-byte resources / 16 KB native-library alignment verified
-ZIP CRC: passed
-OpenXR loader, Godot, vendor extension, C++ shared libraries present
-Quest supportedDevices: quest2|quest3|quest3s|questpro
-VR and IMMERSIVE_HMD launch categories: present
+Version code: 2
+Godot: 4.6.3 stable; OpenXR Vendors: 5.1.0
+ARM64 only; minimum Android API 29; target API 36
+Local development certificate, matching version 0.1.0
+APK v2 signature: verified
+4-byte resources / 16 KB native-library alignment: verified
+ZIP archive integrity: verified
+Godot, OpenXR loader, vendor extension, and C++ native libraries: present
 Four used ambient audio samples: present
-No INTERNET or RECORD_AUDIO permissions
+Networking INTERNET and ACCESS_NETWORK_STATE permissions: present
+Quest 2 / 3 / 3S / Pro metadata and immersive VR launch categories: present
+Test harnesses, build folders, docs, and prebuilt APKs excluded from game assets
 
-Game validation:
-- All 20 arena/mode combinations passed
-- Crystal collection and rewards passed
-- Race gate sequence, finish, and best-time recording passed
-- Bot tagging passed
-- Infection victory passed
-- Settings, reset, restart, and save actions passed
-- Final headless run exited without reported errors
-- Linux OpenGL render inspected
+Real multiplayer:
+- ENet UDP host/join, fixed game port 7777, max 8 players including host
+- Head, hand, rotation, color replication at 20 Hz, interpolated avatars
+- Host controls map, social/tag/infection mode, and restart
+- Host checks hand/body contact and wall obstruction for tags
+- Shared 90-second tag/infection rounds, cooldown, scores and infection results
+- Late join and disconnect handling; host departure returns clients offline
+- IPv4 keypad available in VR; desktop address entry also provided
 
-Physical Quest installation, tracking, comfort, audio output, and performance
-were not tested. This is an offline prototype, without online multiplayer.
+Validation:
+- Three separate Godot processes connected over real ENet UDP loopback
+- Replicated remote avatar, shared map and real-player tag verified
+- Host-only map controls enforced on clients
+- Late join inherited room; three-player infection completed and replicated
+- Client departure removed avatar; host departure restored offline play
+- Malformed/nonfinite and impossible-reach pose checks exercised
+- All 20 offline map/mode combinations and existing reward/race/bot checks passed
+- Desktop menu rendered and inspected
+- No physical Quest, Wi-Fi, router/NAT, or WAN test was available
+
+Internet play needs a reachable host IPv4 address and UDP 7777 forwarding/firewall
+setup. No relay, NAT traversal, matchmaking, room codes, voice chat, or persistent
+public server is included. Movement is client-supplied with basic bounds checks;
+this is a casual prototype, not a hardened competitive anti-cheat implementation.

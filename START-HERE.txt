@@ -1,20 +1,21 @@
-CANOPY CHASE — QUEST PROTOTYPE 0.1.0
+CANOPY CHASE — QUEST MULTIPLAYER PROTOTYPE 0.2.0
 
-An original offline VR playground inspired by arm-driven climbing and tag.
+An original VR playground with direct-connect multiplayer inspired by arm-driven climbing and tag.
 This is an early playable prototype with simple procedural art, not Gorilla Tag
-or an official Gorilla Tag product. No online multiplayer or voice chat.
+or an official Gorilla Tag product. No voice chat or automatic matchmaking.
 
 INSTALL ON QUEST
 1. Enable Developer Mode for your Quest through Meta's supported setup process.
 2. Connect the headset to your computer with a USB data cable and accept the
    USB debugging prompt inside the headset.
-3. Install CanopyChase-Quest.apk using SideQuest's Install APK function, or run:
-   adb install -r CanopyChase-Quest.apk
+3. Install CanopyChase-Quest-Multiplayer.apk using SideQuest's Install APK function, or run:
+   adb install -r CanopyChase-Quest-Multiplayer.apk
 4. Open Canopy Chase from your headset's Unknown Sources app list.
 
 The APK targets ARM64 Quest 2, Quest 3/3S, and Quest Pro with tracked Touch
 controllers. It is locally development-signed. Quest 1 is not supported.
-No account, server, paid assets, microphone, or internet connection is needed.
+No account, paid assets, or microphone is needed. Offline practice remains available.
+For multiplayer, a player hosts the room; other players connect to that host.
 
 QUEST CONTROLS
 Push solid surfaces with your controller palms to propel yourself.
@@ -23,8 +24,26 @@ Release your grip to carry momentum. Either hand can tag a bot.
 Left stick: optional assisted movement. Right stick: snap turn.
 X on the left controller or B on the right: open/close the menu.
 Y on the left: return to camp. Aim the right pointer at menu buttons and pull
-the right trigger to select. Movement and timers pause while the menu is open.
+the right trigger to select. Offline movement and timers pause while the menu is open.
+The shared multiplayer round keeps running while menus are open.
 Use the headset's normal system recenter function to reset your play-space view.
+
+PLAY WITH REAL PLAYERS
+1. Install the same version 0.2.0 on every headset.
+2. Connect headsets to the same Wi-Fi, with guest/client isolation disabled.
+3. One player opens X/B menu and selects HOST ROOM. Read the HOST IP address.
+4. Friends use CLEAR and the number/dot keypad to enter that host IP, then JOIN IP.
+5. Host selects SOCIAL, PLAYER TAG, or PLAYER INFECTION. Host controls map and
+   RESTART. There are 8 player slots including the host; rounds last 90 seconds.
+6. Select LEAVE ROOM to return to offline play. If the host quits, clients return
+   to offline play. Menus do not pause shared rounds and you remain taggable.
+
+Remote internet play requires the host to forward UDP 7777 to the hosting device
+and allow it through any firewall. Friends enter the host's reachable public IPv4
+address. Carrier-grade NAT or double NAT may prevent hosting. No relay, automatic
+NAT traversal, room codes, hosted matchmaking, or persistent public server is
+included. Movement is client-supplied with basic pose validation; this is casual
+multiplayer, without hardened competitive anti-cheat. Do not enter credentials.
 
 INCLUDED
 Four arenas: Emerald Canopy, Sunstone Canyon, Glacier Hollow, Neon Overgrowth.
@@ -66,8 +85,10 @@ A Linux OpenGL desktop render was inspected. Android packaging, manifest,
 ARM64 libraries, APK alignment, and signature are checked separately.
 There was no physical Quest available: installation, controller poses, audio,
 locomotion feel, comfort, and headset frame rate still need device testing.
-This prototype uses a simple bot simulation and flat arena layouts. It has no
-network lobbies, real-player synchronization, moderation, or store integration.
+Multiplayer was checked using a real host plus two separate ENet client processes,
+including late joins, tag/infection results, and disconnect recovery. That is not
+a substitute for physical headset or WAN testing. The prototype has simple art,
+offline bots, direct-connect player rooms, and no moderation or store integration.
 
 LICENSES
 Original game scripts, icon, procedural scenes, and generated audio: MIT,

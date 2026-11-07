@@ -1,6 +1,7 @@
 extends Node3D
 
 const PlayerScript = preload("res://scripts/player.gd")
+const NetworkScript = preload("res://scripts/network.gd")
 const MAPS = ["Emerald Canopy", "Sunstone Canyon", "Glacier Hollow", "Neon Overgrowth"]
 const MODES = ["Free roam", "Bot tag", "Infection", "Time trial", "Crystal hunt"]
 const COLORS = [Color("b3f46f"),Color("66dbef"),Color("ffb868"),Color("e3a0ff"),Color("ff6c8a")]
@@ -40,6 +41,9 @@ var notice = "Welcome! Open the menu to choose your adventure."
 var notice_time = 10.0
 var status_label: Label3D
 var rng = RandomNumberGenerator.new()
+var network: Node
+var network_label: Label3D
+var address_edit: LineEdit
 
 func _ready():
 	rng.seed = 4771
@@ -75,6 +79,10 @@ func _ready():
 	music.volume_db = -13
 	add_child(music)
 	music.finished.connect(func(): music.play())
+	network = Node.new()
+	network.name = "Network"
+	network.set_script(NetworkScript)
+	add_child(network)
 	build_map()
 	build_panel()
 	build_desktop_ui()
@@ -82,6 +90,11 @@ func _ready():
 		call_deferred("smoke_test")
 	if "--capture-preview" in OS.get_cmdline_user_args():
 		call_deferred("capture_preview")
+	for argument in OS.get_cmdline_user_args():
+		if argument.begins_with("--net-test="):
+			var runner = Node.new()
+			runner.set_script(load("res://tests/network_scenario.gd"))
+			add_child(runner)
 
 func mat(color: Color, glow = false) -> StandardMaterial3D:
 	var material = StandardMaterial3D.new()
@@ -227,6 +240,10 @@ func build_map():
 	start_round()
 
 func start_round():
+	if network and network.active:
+		playing = false
+		hide_offline_objectives()
+		return
 	playing = mode != 0
 	round_time = 0
 	score = 0
@@ -250,7 +267,7 @@ func _process(delta):
 		return
 	elapsed += delta
 	notice_time -= delta
-	if not menu_open:
+	if not menu_open and not network.active:
 		round_time += delta if playing else 0.0
 		cooldown -= delta
 		update_bots(delta)
@@ -264,11 +281,17 @@ func _process(delta):
 	if mode==3:
 		details = "Gate %d / %d  |  %.1fs  |  Best %s" % [mini(gate_index+1,gates.size()),gates.size(),round_time,str(best_times.get(str(map_index),"—"))]
 	var message = notice if notice_time>0 else ("YOU ARE IT" if mode==1 and player_it else "X / B: menu   •   Y: camp")
+	if network.active:
+		summary = MAPS[map_index]+"  /  MULTIPLAYER"
+		details = network.status_line()
+		message = "X / B: menu  •  Room keeps running while menus are open"
 	player.status.text = details+"\n"+message
 	if is_instance_valid(desktop_label):
 		desktop_label.text = "CANOPY CHASE\n"+summary+"\n"+details+"\n\n"+message+"\n\nWASD move   •   Mouse look   •   Space jump\nTab menu   •   R camp"
 	if is_instance_valid(status_label):
 		status_label.text = summary+"\n"+details+"\n"+message
+	if is_instance_valid(network_label):
+		network_label.text = "HOST IP: "+network.local_addresses()+"  :7777\nJOIN IP: "+network.address+"\n"+network.status_line()
 
 func update_bots(delta):
 	if mode not in [1,2] or not playing:
@@ -390,7 +413,8 @@ func build_panel():
 		panel.queue_free()
 	panel = Node3D.new()
 	add_child(panel)
-	box(panel,Vector3.ZERO,Vector3(3.5,2.8,.08),Color("102e32"),false)
+	panel.scale = Vector3.ONE*.65
+	box(panel,Vector3(0,-.5,0),Vector3(3.5,3.8,.08),Color("102e32"),false)
 	text3(panel,"CANOPY / CHASE",Vector3(0,1.18,.06),48,.002)
 	text3(panel,"Choose a world. Find your own way up.",Vector3(0,.98,.06),24,.002)
 	for i in range(4):
@@ -406,6 +430,14 @@ func build_panel():
 	menu_button("HAND COLOR  /  15 SHARDS","cosmetic",Vector3(-.75,-.82,.08),Vector2(1.4,.28))
 	menu_button("TURN 30° / 45°","turn",Vector3(.75,-.82,.08),Vector2(1.4,.28))
 	status_label = text3(panel,"",Vector3(0,-1.15,.06),22,.0018)
+	network_label = text3(panel,"",Vector3(0,-1.42,.06),21,.0015)
+	for i in range(3):
+		menu_button(["HOST ROOM","JOIN IP","LEAVE ROOM"][i],["net:host","net:join","net:leave"][i],Vector3(-1.1+i*1.1,-1.68,.08),Vector2(1,.23))
+	for i in range(3):
+		menu_button(["SOCIAL","PLAYER TAG","PLAYER INFECTION"][i],"net:mode:"+str(i),Vector3(-1.1+i*1.1,-1.94,.08),Vector2(1,.23))
+	var keys = ["1","2","3","4","5","6","7","8","9","0",".","DEL","CLEAR"]
+	for i in range(keys.size()):
+		menu_button(keys[i],"net:key:"+keys[i],Vector3(-1.5+i*.25,-2.2,.08),Vector2(.23,.23))
 	panel.visible = menu_open
 
 func menu_button(label: String, action: String, pos: Vector3, size: Vector2):
@@ -428,6 +460,19 @@ func toggle_menu():
 		desktop_menu.visible = menu_open and not player.xr_active
 
 func menu_action(action: String):
+	if action.begins_with("net:"):
+		network_action(action)
+		return
+	if network.active:
+		if action.begins_with("map:"):
+			network.choose_map(int(action.get_slice(":",1)))
+			return
+		if action.begins_with("mode:"):
+			toast("Use SOCIAL, PLAYER TAG or PLAYER INFECTION in the room controls.")
+			return
+		if action=="restart":
+			network.restart_round()
+			return
 	if action.begins_with("map:"):
 		map_index = int(action.get_slice(":",1))
 		build_map()
@@ -511,7 +556,51 @@ func build_desktop_ui():
 			var action = ("map:"+str(i)) if group==MAPS else (("mode:"+str(i)) if group==MODES else str(group[i]).to_lower())
 			button.pressed.connect(func(): menu_action(action))
 			grid.add_child(button)
+	var network_title = Label.new()
+	network_title.text = "MULTIPLAYER  /  Host IP: "+network.local_addresses()+"  /  UDP 7777"
+	column.add_child(network_title)
+	address_edit = LineEdit.new()
+	address_edit.text = network.address
+	address_edit.placeholder_text = "Host IPv4 address"
+	address_edit.text_changed.connect(func(value): network.address = value.strip_edges())
+	column.add_child(address_edit)
+	var network_buttons = HFlowContainer.new()
+	column.add_child(network_buttons)
+	var actions = {"Host room":"net:host","Join IP":"net:join","Leave room":"net:leave","Social":"net:mode:0","Player tag":"net:mode:1","Player infection":"net:mode:2"}
+	for caption in actions:
+		var button = Button.new()
+		button.text = caption
+		button.custom_minimum_size = Vector2(165,42)
+		var action: String = actions[caption]
+		button.pressed.connect(func(): network_action(action))
+		network_buttons.add_child(button)
 	desktop_menu.visible = false
+
+func network_action(action: String):
+	match action:
+		"net:host": network.host_room()
+		"net:join": network.join_room(network.address)
+		"net:leave": network.leave_room()
+	if action.begins_with("net:mode:"):
+		network.choose_mode(int(action.get_slice(":",2)))
+	if action.begins_with("net:key:"):
+		var key = action.get_slice(":",2)
+		if key=="CLEAR":
+			network.address = ""
+		elif key=="DEL":
+			network.address = network.address.left(-1)
+		elif network.address.length()<15:
+			network.address += key
+		if address_edit:
+			address_edit.text = network.address
+
+func hide_offline_objectives():
+	for bot in bots:
+		bot.node.visible = false
+	for crystal in crystals:
+		crystal.node.visible = false
+	for gate in gates:
+		gate.visible = false
 
 func save_progress():
 	var config = ConfigFile.new()

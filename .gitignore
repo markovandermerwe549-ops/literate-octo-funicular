@@ -7,3 +7,5 @@
 export_credentials.cfg
 .godot/
 .DS_Store
+/docs/*.import
+__pycache__/
