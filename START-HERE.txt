@@ -1,0 +1,77 @@
+CANOPY CHASE — QUEST PROTOTYPE 0.1.0
+
+An original offline VR playground inspired by arm-driven climbing and tag.
+This is an early playable prototype with simple procedural art, not Gorilla Tag
+or an official Gorilla Tag product. No online multiplayer or voice chat.
+
+INSTALL ON QUEST
+1. Enable Developer Mode for your Quest through Meta's supported setup process.
+2. Connect the headset to your computer with a USB data cable and accept the
+   USB debugging prompt inside the headset.
+3. Install CanopyChase-Quest.apk using SideQuest's Install APK function, or run:
+   adb install -r CanopyChase-Quest.apk
+4. Open Canopy Chase from your headset's Unknown Sources app list.
+
+The APK targets ARM64 Quest 2, Quest 3/3S, and Quest Pro with tracked Touch
+controllers. It is locally development-signed. Quest 1 is not supported.
+No account, server, paid assets, microphone, or internet connection is needed.
+
+QUEST CONTROLS
+Push solid surfaces with your controller palms to propel yourself.
+Hold a grip near a solid surface to anchor that hand; pull your arm to climb.
+Release your grip to carry momentum. Either hand can tag a bot.
+Left stick: optional assisted movement. Right stick: snap turn.
+X on the left controller or B on the right: open/close the menu.
+Y on the left: return to camp. Aim the right pointer at menu buttons and pull
+the right trigger to select. Movement and timers pause while the menu is open.
+Use the headset's normal system recenter function to reset your play-space view.
+
+INCLUDED
+Four arenas: Emerald Canopy, Sunstone Canyon, Glacier Hollow, Neon Overgrowth.
+Five modes in every arena: free roam, bot tag, infection, time trial, crystal hunt.
+Five wandering/chasing bots with obstacle steering.
+Palm pushing, grip climbing, release momentum, body collisions, camp reset.
+Nine sequential race checkpoints and saved best times per arena.
+Thirty collectible crystals per arena; 90-second tag/infection/hunt rounds.
+In infection, tagged runners help spread infection to other runners.
+Collect shards and earn tag rewards; unlock each next hand color for 15 shards.
+Five hand colors; local saves for shards, tags, unlocks, and race records.
+Day/night lighting, three movement speeds, stick assist, 30/45-degree snap turn,
+sound toggle, controller haptics, VR menu, and head-mounted status display.
+Four original two-minute stereo ambient scores, one for each arena.
+The large audio assets are used by the game; no size-only filler is included.
+
+DESKTOP PREVIEW / SOURCE
+Unzip CanopyChase-Source.zip, import project.godot in Godot 4.6.3, and run.
+If no OpenXR runtime is installed, launch Godot with --xr-mode off.
+WASD moves, mouse looks, Space jumps, Tab opens the menu, R returns to camp.
+The desktop fallback is for viewing and checking game logic. It does not
+simulate tracked arm movement or establish headset comfort/performance.
+
+REBUILD FOR QUEST
+Install Godot 4.6.3 Android export templates. Use Project > Install Android Build
+Template. Configure the Android SDK and Java SDK in Godot Editor Settings.
+The included export preset uses Gradle, ARM64 only, OpenXR, and the Meta vendor
+plugin. The bundled vendor addon is version 5.1.0 for Godot 4.6+.
+Use the matching Godot template's SDK/build-tool requirements (API 36 and
+build tools 36.1.0 for this build), and a compatible JDK 17 or newer.
+Export the Quest preset with a configured development keystore.
+The generated Android build folder, SDK, and private signing key are excluded
+from the source archive. Keep your own signing key for future app updates.
+
+VALIDATION AND LIMITS
+Headless checks exercise all 20 map/mode combinations plus crystal rewards,
+race completion, bot tagging, infection completion, and settings actions.
+A Linux OpenGL desktop render was inspected. Android packaging, manifest,
+ARM64 libraries, APK alignment, and signature are checked separately.
+There was no physical Quest available: installation, controller poses, audio,
+locomotion feel, comfort, and headset frame rate still need device testing.
+This prototype uses a simple bot simulation and flat arena layouts. It has no
+network lobbies, real-player synchronization, moderation, or store integration.
+
+LICENSES
+Original game scripts, icon, procedural scenes, and generated audio: MIT,
+copyright 2026 Canopy Chase contributors. See LICENSE.txt in the source.
+Godot Engine and its dependencies: see GODOT-LICENSE.txt and
+GODOT-THIRD-PARTY.txt in the source. OpenXR Vendors addon and vendor SDKs:
+see addon license files. Meta SDK terms apply to the vendor integration.

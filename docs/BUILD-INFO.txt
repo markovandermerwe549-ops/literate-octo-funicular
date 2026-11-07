@@ -1,0 +1,34 @@
+CANOPY CHASE 0.1.0 — BUILD VERIFICATION
+
+APK: CanopyChase-Quest.apk
+Bytes: 169638323
+Size: 169.64 MB (161.78 MiB)
+SHA-256: 78d3a41d182e9e425de7b054aabae401682f685e6b496e98b5a4822f38268e28
+
+Package: org.canopychase.quest
+Architecture: ARM64 only
+Minimum Android API: 29
+Target Android API: 36
+Godot: 4.6.3 stable
+OpenXR Vendors: 5.1.0
+Signing: local development certificate; APK v2 signature verified
+APK alignment: 4-byte resources / 16 KB native-library alignment verified
+ZIP CRC: passed
+OpenXR loader, Godot, vendor extension, C++ shared libraries present
+Quest supportedDevices: quest2|quest3|quest3s|questpro
+VR and IMMERSIVE_HMD launch categories: present
+Four used ambient audio samples: present
+No INTERNET or RECORD_AUDIO permissions
+
+Game validation:
+- All 20 arena/mode combinations passed
+- Crystal collection and rewards passed
+- Race gate sequence, finish, and best-time recording passed
+- Bot tagging passed
+- Infection victory passed
+- Settings, reset, restart, and save actions passed
+- Final headless run exited without reported errors
+- Linux OpenGL render inspected
+
+Physical Quest installation, tracking, comfort, audio output, and performance
+were not tested. This is an offline prototype, without online multiplayer.
