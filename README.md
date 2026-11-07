@@ -4,7 +4,7 @@ An original, offline Quest VR playground inspired by arm-driven climbing and tag
 
 ## Download and install
 
-[Download the Quest APK (169.6 MB)](https://github.com/markovandermerwe549-ops/literate-octo-funicular/releases/download/v0.1.0/CanopyChase-Quest.apk) · [All release files](https://github.com/markovandermerwe549-ops/literate-octo-funicular/releases/tag/v0.1.0)
+[Download the Quest APK (169.6 MB)](https://github.com/markovandermerwe549-ops/literate-octo-funicular/raw/refs/tags/v0.1.0/builds/CanopyChase-Quest.apk) · [All release files](https://github.com/markovandermerwe549-ops/literate-octo-funicular/releases/tag/v0.1.0)
 
 Enable Quest Developer Mode, connect over USB, accept USB debugging, and sideload the APK using SideQuest. Or run:
 
@@ -47,6 +47,8 @@ Launch **Canopy Chase** from **Unknown Sources**. Targets Quest 2, Quest 3/3S, a
 Import `project.godot` into **Godot 4.6.3**. The OpenXR Vendors 5.1.0 addon is included with its licenses. If no OpenXR runtime is available, use `godot --path . --xr-mode off` for the desktop preview. Desktop controls: WASD, mouse, Space, Tab, and R.
 
 For Quest exports, install matching Godot Android templates and use **Project > Install Android Build Template**. Configure a full JDK and the Android SDK in Editor Settings. This build used JDK 17, Android API 36, and build tools 36.1.0. Export the included **Quest** preset with your own configured signing key. Generated build folders and private keys are excluded.
+
+The prebuilt APK in `builds/` is stored with Git LFS. Use the direct APK download link above, or install Git LFS before cloning. A GitHub source ZIP may contain an LFS pointer in place of the APK; use the direct download for installation.
 
 The APK is larger than 100 MB because it includes used stereo ambient audio and the native VR runtime, with no size-only filler.
 
